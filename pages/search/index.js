@@ -34,7 +34,7 @@ export default function Home() {
 
   const optimizedFn = useCallback(debounce(handleChange), []);
 
-  console.log({ data, pending, error });
+  // console.log({ data, pending, error });
 
   const loading = pending && <Loader />;
 
@@ -44,9 +44,9 @@ export default function Home() {
     return data?.items.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, data?.items]);
 
-  console.log({ currentSearchData });
+  // console.log({ currentSearchData });
 
-  const searchList = currentSearchData ? (
+  const searchList = currentSearchData.length ? (
     <ul className={styles.results}>
       {currentSearchData.map(({ id, login, avatar_url }) => (
         <Link
@@ -65,8 +65,6 @@ export default function Home() {
   ) : (
     <div>No result found</div>
   );
-
-  // add value to input
 
   return (
     <div className={styles.container}>
