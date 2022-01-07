@@ -1,14 +1,18 @@
 import styles from "@styles/Home.module.css";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@components/loader/loader";
 import { search, searchSelector } from "../../redux";
+import Pagination from "@components/pagination/Pagination";
+
+let PageSize = 10;
 
 export default function Home() {
   const searchRef = useRef(null);
   const dispatch = useDispatch();
   const { data, pending, error } = useSelector(searchSelector);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const debounce = (func) => {
     let timer;
@@ -34,31 +38,33 @@ export default function Home() {
 
   const loading = pending && <Loader />;
 
-  const searchList =
-    data && data?.items?.length ? (
-      <ul className={styles.results}>
-        {data.items.map(({ id, login, avatar_url }, item) => (
-          <Link
-            href={{ pathname: "/search/[id]", query: { login } }}
-            as={`/search/${id}`}
-            passHref
-            key={id}
-          >
-            <li className={styles.result}>
-              <img src={avatar_url} alt={login} />
-              <span>{login}</span>
-            </li>
-          </Link>
-        ))}
-      </ul>
-    ) : (
-      <div>No result found</div>
-    );
+  const currentSearchData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    return data?.items.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, data?.items]);
 
-  /**
-   *
-    If the results are not complete in one page, the pagination is shown on the screen
-   */
+  console.log({ currentSearchData });
+
+  const searchList = currentSearchData ? (
+    <ul className={styles.results}>
+      {currentSearchData.map(({ id, login, avatar_url }) => (
+        <Link
+          href={{ pathname: "/search/[id]", query: { login } }}
+          as={`/search/${id}`}
+          passHref
+          key={id}
+        >
+          <li className={styles.result}>
+            <img src={avatar_url} alt={login} />
+            <span>{login}</span>
+          </li>
+        </Link>
+      ))}
+    </ul>
+  ) : (
+    <div>No result found</div>
+  );
 
   // add value to input
 
@@ -72,6 +78,13 @@ export default function Home() {
           type="text"
         />
         {loading ? loading : searchList}
+        <Pagination
+          className={styles.pagination}
+          currentPage={currentPage}
+          totalCount={data?.items?.length || 0}
+          pageSize={PageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
     </div>
   );

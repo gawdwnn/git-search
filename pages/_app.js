@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import "../components/pagination/pagination.scss"
 import { store } from "../redux/store";
 import { Provider } from "react-redux";
 
