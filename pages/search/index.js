@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@components/loader/loader";
 import { search, searchSelector } from "../../redux";
-import Pagination from "@components/pagination/Pagination";
+import Pagination from "@components/pagination/pagination";
 
 let PageSize = 10;
 
@@ -41,7 +41,7 @@ export default function Home() {
   const currentSearchData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
-    return data?.items.slice(firstPageIndex, lastPageIndex);
+    return data?.items.slice(firstPageIndex, lastPageIndex) || [];
   }, [currentPage, data?.items]);
 
   // console.log({ currentSearchData });
